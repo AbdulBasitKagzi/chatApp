@@ -2,11 +2,12 @@
   "name": "chatdemo",
   "version": "0.1.0",
   "private": true,
-  "proxy":"http://localhost:4000",
+  "proxy": "http://localhost:4000",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@material-ui/icons": "^4.11.3",
+    "@mui/icons-material": "^5.10.14",
     "@mui/material": "^5.10.14",
     "@reduxjs/toolkit": "^1.9.0",
     "@testing-library/jest-dom": "^5.16.5",

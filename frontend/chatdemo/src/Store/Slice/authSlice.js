@@ -6,6 +6,7 @@ const userState = {
   isLoading: "",
   error: "",
   token: "",
+  allUsers: [],
 };
 
 export const registerUser = createAsyncThunk(
@@ -30,7 +31,7 @@ export const registerUser = createAsyncThunk(
 );
 
 export const LoginUser = createAsyncThunk(
-  "userslice/signup",
+  "userslice/login",
   async (body, thunkAPI) => {
     try {
       const response = await axios.post("http://localhost:4000/login", body, {
@@ -42,6 +43,27 @@ export const LoginUser = createAsyncThunk(
       console.log("res", response);
       localStorage.setItem("userData", JSON.stringify(response.data.User));
       localStorage.setItem("token", JSON.stringify(response.data.token));
+      return response;
+    } catch (error) {
+      console.log("error", error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getUsers = createAsyncThunk(
+  "userslice/getusers",
+  async (body, thunkAPI) => {
+    try {
+      const response = await axios.get("http://localhost:4000/getuser", body, {
+        header: {
+          "Content-Type":
+            "application/x-www-form-urlencoded; charset=UTF-8;application/json",
+        },
+      });
+      console.log("res", response);
+      // localStorage.setItem("userData", JSON.stringify(response.data.User));
+      // localStorage.setItem("token", JSON.stringify(response.data.token));
       return response;
     } catch (error) {
       console.log("error", error);
@@ -73,6 +95,19 @@ const userSlice = createSlice({
       state.isLoading = true;
     },
     [LoginUser.rejected]: (state, action) => {
+      console.log("action", action);
+      state.isLoading = false;
+    },
+    [getUsers.fulfilled]: (state, action) => {
+      console.log("action", action);
+      state.isLoading = false;
+      state.allUsers = action.payload.data;
+      console.log("all user", state.allUsers);
+    },
+    [getUsers.pending]: (state, action) => {
+      state.isLoading = true;
+    },
+    [getUsers.rejected]: (state, action) => {
       console.log("action", action);
       state.isLoading = false;
     },

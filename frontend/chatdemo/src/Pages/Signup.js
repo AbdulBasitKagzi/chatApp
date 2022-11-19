@@ -46,6 +46,11 @@ function Signup() {
   });
   // const [token, setToken] = React.useState();
   const { token } = useSelector((state) => state.user);
+  React.useEffect(() => {
+    console.log("i am here");
+
+    token && navigate("/");
+  }, [token]);
   const dispatch = useDispatch();
   // const { token } = useSelector((state) => state.user);
 
@@ -70,11 +75,6 @@ function Signup() {
   };
   console.log("userDetail", userDetail);
 
-  React.useEffect(() => {
-    console.log("i am here");
-
-    token && navigate("/");
-  }, [token]);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -164,7 +164,7 @@ function Signup() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
