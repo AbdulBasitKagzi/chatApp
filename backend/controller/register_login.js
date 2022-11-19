@@ -67,5 +67,18 @@ async function LoginUser(req, res) {
   }
 }
 
+async function getUser(req, res) {
+  try {
+    const allUser = await user.find();
+    if (!allUser) {
+      return res.status(400).json({ message: "no user found" });
+    }
+    return res.status(200).json(allUser);
+  } catch (error) {
+    console.log("error");
+    return res.status(400).send("Look at console for error.");
+  }
+}
+
 // exports
-module.exports = { registerUser, LoginUser };
+module.exports = { registerUser, LoginUser, getUser };
