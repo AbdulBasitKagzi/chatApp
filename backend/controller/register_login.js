@@ -24,6 +24,7 @@ async function registerUser(req, res) {
       user: user._id,
     };
     const token = jwt.sign(data, secret_key);
+    console.log("gentoken", token);
     // sending response
     return res.status(200).json({ newUser, token, message: "User Created" });
   } catch (error) {
@@ -58,6 +59,7 @@ async function LoginUser(req, res) {
     };
     // generating token
     const token = jwt.sign(data, secret_key);
+    console.log("gentoken", token);
     // sending  response
     return res.status(200).json({ User, token, message: "User Logged in" });
   } catch (error) {
