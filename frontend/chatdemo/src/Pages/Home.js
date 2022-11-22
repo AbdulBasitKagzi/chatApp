@@ -12,13 +12,17 @@ import Typography from "@mui/material/Typography";
 
 import { getUsers } from "../Store/Slice/authSlice";
 import { getConversation } from "../Store/Slice/conversationSlice";
+import { getChat } from "../Store/Slice/chatSlice";
 
 import { AppBar, styled, Box } from "@mui/material";
 
 function Home() {
   const [user, setUser] = React.useState();
-  const [myuser, setmyUser] = React.useState();
-  const [userName, setUserName] = React.useState();
+  const [myuser, setmyUser] = React.useState([]);
+  const [userName, setUserName] = React.useState({
+    name: "",
+    convoid: "",
+  });
   const [show, setShow] = React.useState(false);
   const dispatch = useDispatch();
   const { allUsers } = useSelector((state) => state.user);
@@ -29,19 +33,39 @@ function Home() {
     dispatch(getUsers());
     dispatch(getConversation());
 
+    setUsers(JSON.parse(localStorage.getItem("userData")));
     // const allusers = allUsers?.map((user) => {
     //   console.log("as", user._id);
     // });
   }, []);
   React.useEffect(() => {
-    setUsers(
-      conversation?.map((convo) => {
-        console.log("asfsads", convo.members);
-        return convo.members;
-      })
-    );
-  }, []);
-  console.log("users", users);
+    // console.log("conversation", conversation);
+
+    // mapping users who have conversation with the login user
+    conversation?.map((convo) => {
+      console.log("mem", convo.members);
+      convo.members.map((m) => {
+        console.log("m", m);
+        allUsers.filter((user) => {
+          if (user._id === users._id) {
+            return;
+          } else if (user._id === m) {
+            console.log("user", user);
+
+            console.log("convo", user);
+            setmyUser((prev) => [
+              ...prev,
+              (user = { ...user, convoId: convo._id }),
+            ]);
+          } else console.log("false");
+        });
+      });
+    });
+  }, [conversation]);
+  console.log("name", userName);
+  // console.log("users", users);
+  console.log("myuser", myuser);
+  // console.log("user", user);
 
   // console.log("all", allUsers);
   // console.log("user", user);
@@ -58,26 +82,9 @@ function Home() {
           <Appbar />
           {/* below code needs to be changed */}
           <div>This is {user?.name}</div>
-          {allUsers.filter((user, index) => {
-            console.log(user._id);
-            if (user._id === "63777e6bcd1cd6940d46d4ea") {
-              console.log("abdiulsadsa", user);
-              setmyUser((prev) => [
-                {
-                  ...prev,
-                  user,
-                },
-              ]);
-              return (
-                <>
-                  {myuser?.map((user) => {
-                    <p>{user.name}</p>;
-                  })}
-                </>
-              );
-            } else return;
-          })}
-          {allUsers?.map((user) => {
+
+          {myuser?.map((user) => {
+            console.log(user);
             return (
               <>
                 <ListItem alignItems="flex-start">
@@ -90,7 +97,13 @@ function Home() {
                   <Box
                     onClick={() => {
                       console.log("id", user._id);
-                      setUserName(user.name);
+                      console.log("id", user.convoId);
+                      dispatch(getChat(user.convoId));
+                      setUserName((prev) => ({
+                        ...prev,
+                        name: user.name,
+                        convoid: user.convoId,
+                      }));
                       setShow(true);
                     }}
                   >
@@ -117,10 +130,54 @@ function Home() {
               </>
             );
           })}
+          {/* {allUsers?.map((user) => {
+            return (
+              <>
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="/static/images/avatar/1.jpg"
+                    />
+                  </ListItemAvatar>
+                  <Box
+                    onClick={() => {
+                      console.log("id", user._id);
+                      setUserName(user.name);
+                      setShow(true);
+                    }}
+                  >
+                    {user.name}
+                  </Box> */}
+          {/* <ListItemText
+                    primary={user.name}
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          Ali Connors
+                        </Typography>
+                        {" — I'll be in your neighborhood doing errands this…"}
+                      </React.Fragment>
+                    }
+                  /> */}
+          {/* </ListItem>
+                <Divider variant="inset" />
+              </>
+            );
+          })} */}
         </Box>
         {show ? (
           <Box>
-            <Chat userProp={userName} />
+            <Chat
+              username={userName.name}
+              convoid={userName.convoid}
+              sender={user._id}
+            />
           </Box>
         ) : (
           <Box>

@@ -43,7 +43,6 @@ const converSationSlice = createSlice({
   initialState: conversationState,
   extraReducers: {
     [getConversation.fulfilled]: (state, action) => {
-      console.log("tok", state.token);
       console.log("fulfilled action", action);
       state.conversation = action.payload.data.convo;
       state.isLoading = false;
@@ -53,7 +52,6 @@ const converSationSlice = createSlice({
     state.isLoading = true;
   },
   [getConversation.rejected]: (state, action) => {
-    console.log("tok", state.token);
     console.log("pending action", action);
     state.isLoading = false;
   },
