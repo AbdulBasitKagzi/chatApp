@@ -3,6 +3,7 @@ const Chat = require("../models/chatModel");
 
 async function createChat(req, res) {
   try {
+    console.log("body", req.body);
     const { chat, conversationId } = req.body;
 
     const createChat = await Chat.create({
@@ -23,7 +24,10 @@ async function getChat(req, res) {
     console.log("id", req.userId);
     const getChat = await Chat.find({
       conversationId: req.params.conversationId,
-    });
+    }).sort({ timestamps: -1 });
+    if (getChat.length === 0) {
+      return res.status(200).json({ message: "No messages found" });
+    }
     console.log("chat", getChat);
     return res.status(200).json(getChat);
   } catch (error) {

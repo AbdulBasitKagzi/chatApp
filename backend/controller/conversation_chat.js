@@ -1,12 +1,18 @@
 const conversation = require("../models/coversationModel");
 
 async function startConversation(req, res) {
-  const userid = req.params.id;
-  console.log("userid", userid);
-
-  //   const { members, message } = req.body;
-
   try {
+    // finding the existing conversation
+    const exist = await conversation.find({
+      $and: [
+        { members: { $in: req.userId } },
+        { members: { $in: req.body.id } },
+      ],
+    });
+    console.log("exist", exist);
+    if (exist.length !== 0) {
+      return res.status(200).json({ message: "conversation already exist" });
+    }
     const response = await conversation.create({
       members: [req.userId, req.body.id],
     });
