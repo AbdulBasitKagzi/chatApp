@@ -44,15 +44,15 @@ function Signup() {
     email: "",
     password: "",
   });
-  // const [token, setToken] = React.useState();
+ 
   const { token } = useSelector((state) => state.user);
-  React.useEffect(() => {
-    console.log("i am here");
 
+  React.useEffect(() => {
+    console.log('here')
     token && navigate("/");
   }, [token]);
+ 
   const dispatch = useDispatch();
-  // const { token } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -72,8 +72,8 @@ function Signup() {
       return;
     }
     dispatch(registerUser(userDetail));
+    navigate('/')
   };
-  console.log("userDetail", userDetail);
 
   return (
     <ThemeProvider theme={theme}>

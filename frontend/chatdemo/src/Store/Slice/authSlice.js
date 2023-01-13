@@ -1,20 +1,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
 const userState = {
-  userData: [],
+  userData:"",
   isLoading: "",
   error: "",
   token: "",
   allUsers: [],
+  isAutheticated: false
 };
 
 const apiCall = axios.create({
   baseURL: "http://localhost:4000/",
-  header: {
+  headers: {
     "Access-Control-Allow-Origin": "*",
-    "Content-Type":
-      "application/x-www-form-urlencoded; charset=UTF-8;application/json",
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage
+      .getItem("token")
+      .replace(/\"/g, "")}`,
   },
 });
 
@@ -22,9 +26,7 @@ export const registerUser = createAsyncThunk(
   "userslice/signup",
   async (body, thunkAPI) => {
     try {
-      const response = await apiCall.post("/post", body);
-      console.log("res", response);
-      localStorage.setItem("userData", JSON.stringify(response.data.newUser));
+      const response = await apiCall.post("/post", body)
       localStorage.setItem("token", JSON.stringify(response.data.token));
       return response;
     } catch (error) {
@@ -39,8 +41,6 @@ export const LoginUser = createAsyncThunk(
   async (body, thunkAPI) => {
     try {
       const response = await apiCall.post("/login", body);
-      console.log("res", response);
-      localStorage.setItem("userData", JSON.stringify(response.data.User));
       localStorage.setItem("token", JSON.stringify(response.data.token));
       return response;
     } catch (error) {
@@ -55,9 +55,6 @@ export const getUsers = createAsyncThunk(
   async (body, thunkAPI) => {
     try {
       const response = await apiCall.get("/getuser", body);
-      console.log("res", response);
-      // localStorage.setItem("userData", JSON.stringify(response.data.User));
-      // localStorage.setItem("token", JSON.stringify(response.data.token));
       return response;
     } catch (error) {
       console.log("error", error);
@@ -65,6 +62,22 @@ export const getUsers = createAsyncThunk(
     }
   }
 );
+
+export const getCurrentUser = createAsyncThunk(
+  "userslice/getcurrentuser",
+  async (body, thunkAPI) => {
+    try {
+      console.log('jemin')
+      const response = await apiCall.get("/getcurrentuser");
+      return response;
+    } catch (error) {
+      console.log("error", error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+
 const userSlice = createSlice({
   name: "userslice",
   initialState: userState,
@@ -72,37 +85,55 @@ const userSlice = createSlice({
     [registerUser.fulfilled]: (state, action) => {
       state.token = action.payload.data.token;
       state.isLoading = false;
+      state.isAutheticated = true
+      state.userData = action.payload.data[0]
     },
     [registerUser.pending]: (state, action) => {
       state.isLoading = true;
     },
     [registerUser.rejected]: (state, action) => {
-      console.log("action", action);
+
       state.isLoading = false;
     },
+
     [LoginUser.fulfilled]: (state, action) => {
-      console.log("action", action);
       state.token = action.payload.data.token;
       state.isLoading = false;
+      state.isAutheticated = true
+      state.userData = action.payload.data[0]
     },
     [LoginUser.pending]: (state, action) => {
       state.isLoading = true;
     },
     [LoginUser.rejected]: (state, action) => {
-      console.log("action", action);
       state.isLoading = false;
     },
+
     [getUsers.fulfilled]: (state, action) => {
-      console.log("action", action);
       state.isLoading = false;
       state.allUsers = action.payload.data;
-      console.log("all user", state.allUsers);
+      state.isAutheticated = true
     },
+
     [getUsers.pending]: (state, action) => {
       state.isLoading = true;
     },
     [getUsers.rejected]: (state, action) => {
       console.log("action", action);
+      state.isLoading = false;
+    },
+
+    [getCurrentUser.fulfilled]: (state, action) => {
+
+      state.userData = action.payload.data[0]
+      state.isLoading = false;
+      state.isAutheticated = true
+
+    },
+    [getCurrentUser.pending]: (state, action) => {
+      state.isLoading = true;
+    },
+    [getCurrentUser.rejected]: (state, action) => {
       state.isLoading = false;
     },
   },
