@@ -4,7 +4,20 @@ import axios from "axios";
 const chatState = {
   isLoading: "",
   chat: [],
+  image:null
 };
+
+const apiCall = axios.create({
+  baseURL: "http://localhost:4000/",
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "multipart/form-data",
+    Authorization: `Bearer ${localStorage
+      .getItem("token")
+      ?.replace(/\"/g, "")}`,
+  },
+});
+
 
 export const postChat = createAsyncThunk(
   "chaltslice/postchat",
@@ -18,8 +31,6 @@ export const postChat = createAsyncThunk(
             .replace(/\"/g, "")}`,
         },
       });
-      console.log("res", response);
-      console.log("222", body.conversationId);
       thunkAPI.dispatch(getChat(body.conversationId));
       //   return response;
     } catch (error) {
@@ -43,7 +54,7 @@ export const getChat = createAsyncThunk(
           },
         }
       );
-      console.log("res", response);
+      // console.log("res", response);
 
       return response;
     } catch (error) {
@@ -52,6 +63,16 @@ export const getChat = createAsyncThunk(
     }
   }
 );
+
+export const uploadFile = createAsyncThunk("chatslice/uploadfile", async (body, thunkAPI) => {
+  try {
+    const response = await apiCall.post('/post/file', body)
+    return response
+  } catch (error) {
+    console.log("error", error);
+    return thunkAPI.rejectWithValue(error);
+  }
+})
 
 const chatSlice = createSlice({
   name: "chatslice",
@@ -62,19 +83,19 @@ const chatSlice = createSlice({
     },
   },
   extraReducers: {
+
     [postChat.fulfilled]: (state, action) => {
-      console.log("chat fulfilled action", action);
       state.isLoading = false;
     },
     [postChat.pending]: (state) => {
       state.isLoading = true;
     },
     [postChat.rejected]: (state, action) => {
-      console.log("chat rejected action", action);
+
       state.isLoading = false;
     },
+
     [getChat.fulfilled]: (state, action) => {
-      console.log("chat fulfilled action", action);
 
       state.isLoading = false;
       state.chat = action.payload.data;
@@ -83,7 +104,17 @@ const chatSlice = createSlice({
       state.isLoading = true;
     },
     [getChat.rejected]: (state, action) => {
-      console.log("chat rejected action", action);
+      state.isLoading = false;
+    },
+
+    [uploadFile.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.image = action.payload.data.url;
+    },
+    [uploadFile.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [uploadFile.rejected]: (state, action) => {
       state.isLoading = false;
     },
   },

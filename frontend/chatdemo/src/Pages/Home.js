@@ -8,21 +8,39 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
-
+import { io, Socket } from "socket.io-client";
 import { getUsers, getCurrentUser } from "../Store/Slice/authSlice";
 import { getConversation } from "../Store/Slice/conversationSlice";
 import { getChat } from "../Store/Slice/chatSlice";
 
 function Home() {
+  const socket = React.useRef()
   const [myuser, setmyUser] = React.useState([]);
   const [userName, setUserName] = React.useState({
     name: "",
     convoid: "",
+    id: ''
   });
   const [show, setShow] = React.useState(false);
   const dispatch = useDispatch();
-  const { allUsers,userData } = useSelector((state) => state.user);
+  const { allUsers, userData } = useSelector((state) => state.user);
   const { conversation } = useSelector((state) => state.conversation);
+  const [activeUser, setActiveUser] = React.useState([])
+
+
+
+  React.useEffect(() => {
+    socket.current = io("http://localhost:4000", { secure: true })
+    socket.current.emit('addUser', userData?._id)
+
+    socket.current.on('getUsers', (users) => {
+      setActiveUser(users)
+    })
+  }, [userData])
+
+  useEffect(() => {
+    console.log('activeuser', activeUser)
+  }, [activeUser])
 
   useEffect(() => {
     dispatch(getUsers());
@@ -34,14 +52,12 @@ function Home() {
     setmyUser([])
 
     // mapping users who have conversation with the login user
-     conversation?.map((convo) => {
+    conversation?.map((convo) => {
       convo.members.map((m) => {
-       userData && allUsers?.filter((user) => {
-          console.log(user._id,userData?._id)
+        userData && allUsers?.filter((user) => {
           if (user._id === userData?._id) {
             return;
           } else if (user._id === m) {
-            console.log('else',user)
             setmyUser((prev) => [
               ...prev,
               (user = { ...user, convoId: convo._id }),
@@ -50,10 +66,9 @@ function Home() {
         });
       });
     });
-  }, [conversation,userData]);
+  }, [conversation, userData]);
 
 
-  
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -62,7 +77,7 @@ function Home() {
           {/* below code needs to be changed */}
           <div>This is {userData?.name}</div>
 
-          {myuser?.map((user) => {  
+          {myuser?.map((user) => {
             return (
               <>
                 <ListItem alignItems="flex-start">
@@ -79,6 +94,7 @@ function Home() {
                         ...prev,
                         name: user.name,
                         convoid: user.convoId,
+                        id: user._id
                       }));
                       setShow(true);
                     }}
@@ -96,7 +112,10 @@ function Home() {
             <Chat
               username={userName.name}
               convoid={userName.convoid}
+              reciever={userName.id}
               sender={userData._id}
+              conversation={conversation?.find((convo) => convo?._id === userName.convoid)}
+              activeUser={activeUser}
             />
           </Box>
         ) : (

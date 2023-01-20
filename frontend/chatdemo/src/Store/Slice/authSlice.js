@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 const userState = {
-  userData:"",
+  userData: "",
   isLoading: "",
   error: "",
   token: "",
@@ -18,7 +18,7 @@ const apiCall = axios.create({
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage
       .getItem("token")
-      .replace(/\"/g, "")}`,
+      ?.replace(/\"/g, "")}`,
   },
 });
 
@@ -30,7 +30,6 @@ export const registerUser = createAsyncThunk(
       localStorage.setItem("token", JSON.stringify(response.data.token));
       return response;
     } catch (error) {
-      console.log("error", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -44,7 +43,6 @@ export const LoginUser = createAsyncThunk(
       localStorage.setItem("token", JSON.stringify(response.data.token));
       return response;
     } catch (error) {
-      console.log("error", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -57,7 +55,6 @@ export const getUsers = createAsyncThunk(
       const response = await apiCall.get("/getuser", body);
       return response;
     } catch (error) {
-      console.log("error", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -67,16 +64,13 @@ export const getCurrentUser = createAsyncThunk(
   "userslice/getcurrentuser",
   async (body, thunkAPI) => {
     try {
-      console.log('jemin')
       const response = await apiCall.get("/getcurrentuser");
       return response;
     } catch (error) {
-      console.log("error", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
-
 
 const userSlice = createSlice({
   name: "userslice",
@@ -86,7 +80,7 @@ const userSlice = createSlice({
       state.token = action.payload.data.token;
       state.isLoading = false;
       state.isAutheticated = true
-      state.userData = action.payload.data[0]
+      state.userData = action.payload.data.User
     },
     [registerUser.pending]: (state, action) => {
       state.isLoading = true;
@@ -100,7 +94,7 @@ const userSlice = createSlice({
       state.token = action.payload.data.token;
       state.isLoading = false;
       state.isAutheticated = true
-      state.userData = action.payload.data[0]
+      state.userData = action.payload.data.User
     },
     [LoginUser.pending]: (state, action) => {
       state.isLoading = true;
@@ -119,7 +113,6 @@ const userSlice = createSlice({
       state.isLoading = true;
     },
     [getUsers.rejected]: (state, action) => {
-      console.log("action", action);
       state.isLoading = false;
     },
 

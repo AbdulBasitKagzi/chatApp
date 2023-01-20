@@ -19,17 +19,15 @@ export const getConversation = createAsyncThunk(
   "conversationSlice/getConversation",
   async (body, thunkAPI) => {
     try {
-      console.log(localStorage.getItem("token"));
       const response = await apiCall("/getconversation", {
         headers: {
           "Content-Type":
             "application/x-www-form-urlencoded; charset=UTF-8;application/json",
           Authorization: `Bearer ${localStorage
             .getItem("token")
-            .replace(/\"/g, "")}`,
+            ?.replace(/\"/g, "")}`,
         },
       });
-      console.log("res", response);
       return response;
     } catch (error) {
       console.log("error", error);
@@ -43,7 +41,6 @@ const converSationSlice = createSlice({
   initialState: conversationState,
   extraReducers: {
     [getConversation.fulfilled]: (state, action) => {
-      console.log("fulfilled action", action);
       state.conversation = action.payload.data.convo;
       state.isLoading = false;
     },

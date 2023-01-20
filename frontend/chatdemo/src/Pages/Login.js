@@ -60,11 +60,9 @@ function Login() {
     }
     dispatch(LoginUser(userDetail));
   };
-  console.log("userlogin", userDetail);
+ 
 
-  React.useEffect(() => {
-    console.log("i am here");
-
+  React.useEffect(() => { 
     token && navigate("/");
   }, [token]);
 

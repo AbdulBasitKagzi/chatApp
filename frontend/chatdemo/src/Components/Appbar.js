@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { io } from "socket.io-client";
 
 import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -37,6 +39,12 @@ function Appbar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [state, setState] = React.useState(false);
   const navigate = useNavigate();
+  const socket=React.useRef()
+  const {userData}=useSelector((state)=>state.user)
+
+ React.useEffect(() => {
+    socket.current = io("http://localhost:4000", { secure: true })
+  }, [])
   return (
     <Box>
       <AppBar position="static" sx={{ boxShadow: 0 }}>
@@ -77,10 +85,14 @@ function Appbar() {
                     ml: 1,
                   }}
                   onClick={() => {
+                    
                     localStorage.removeItem("token");
                     localStorage.removeItem("userData");
                     setState(true);
                     navigate("/login");
+                    socket.current.emit("logOut", userData._id)
+
+                    
                   }}
                 >
                   Logout
