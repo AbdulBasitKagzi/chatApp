@@ -1,9 +1,24 @@
 const user = require("../models/userModel");
-
+const userId = require('../middleware/userId')
 const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcrypt");
 
 const secret_key = "abdulbasitkagzi";
+
+
+async function getCurrentUser(req, res) {
+  try {
+
+    const User = await user.find({ _id: req.userId });
+    if (!User) {
+      return res.status(400).json({ message: "no user found" });
+    }
+    return res.status(200).json(User);
+  } catch (error) {
+    return res.status(400).send("Look at console for error.");
+  }
+}
+
 
 async function registerUser(req, res) {
   const { name, email, password, role } = req.body;
@@ -83,4 +98,4 @@ async function getUser(req, res) {
 }
 
 // exports
-module.exports = { registerUser, LoginUser, getUser };
+module.exports = { registerUser, LoginUser, getUser, getCurrentUser };
