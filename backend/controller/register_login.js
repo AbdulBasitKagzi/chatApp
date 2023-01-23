@@ -9,7 +9,7 @@ const secret_key = "abdulbasitkagzi";
 async function getCurrentUser(req, res) {
   try {
 
-    const User = await user.find({ _id: req.userId });
+    const User = await user.findOne({ _id: req.userId });
     if (!User) {
       return res.status(400).json({ message: "no user found" });
     }
@@ -97,5 +97,17 @@ async function getUser(req, res) {
   }
 }
 
+async function updateUserSettings(req, res) {
+  try {
+    console.log('body------>', req.body)
+    const User = await user.findOneAndUpdate({ _id: req.userId }, [{ $addFields: { settings: req.body } }])
+
+    return res.status(200).json({ User, message: "User settings updated." })
+  } catch (error) {
+    console.log('error===>', error)
+  }
+}
+// body------> { showProfilePic: true, allowTagging: false, showMessage: false }
+
 // exports
-module.exports = { registerUser, LoginUser, getUser, getCurrentUser };
+module.exports = { registerUser, LoginUser, getUser, getCurrentUser, updateUserSettings };

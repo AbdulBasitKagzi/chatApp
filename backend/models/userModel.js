@@ -20,6 +20,26 @@ const User = mongoose.Schema(
       type: String,
       default: "user",
     },
+    settings: {
+      
+      usersettings: {
+
+        showProfilePic: {
+          type: Boolean,
+          default: false,
+        },
+
+        showMessage: {
+          type: Boolean,
+          default: false,
+        },
+
+        allowTagging: {
+          type: Boolean,
+          default: false
+        }
+      }
+    }
   },
   { timestamps: true }
 );

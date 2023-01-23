@@ -5,7 +5,8 @@ const secret_key = "abdulbasitkagzi";
 const userId = (req, res, next) => {
 
   const token = req.header("Authorization").replace("Bearer ", "")
-  //  console.log("token from middleware", token);
+  
+  console.log("token from middleware-------->", token);
 
   if (!token) {
     return res.status(400).json({ message: "User not logged in" });
@@ -13,6 +14,7 @@ const userId = (req, res, next) => {
   try {
     //  console.log("token", token);
     const userId = jwt.verify(token, secret_key);
+    console.log('id------>',userId)
   
     req.userId = userId.user;
     next();
