@@ -64,15 +64,25 @@ export const getChat = createAsyncThunk(
   }
 );
 
-export const uploadFile = createAsyncThunk("chatslice/uploadfile", async (body, thunkAPI) => {
+// export const uploadFile = createAsyncThunk("chatslice/uploadfile", async (body, thunkAPI) => {
+//   try {
+//     const response = await apiCall.post('/post/file', body)
+//     return response
+//   } catch (error) {
+//     console.log("error", error);
+//     return thunkAPI.rejectWithValue(error);
+//   }
+// })
+
+// to upload image and get url
+export const uploadFile = async (body ) => {
   try {
     const response = await apiCall.post('/post/file', body)
-    return response
+    return response.data.url
   } catch (error) {
     console.log("error", error);
-    return thunkAPI.rejectWithValue(error);
   }
-})
+}
 
 const chatSlice = createSlice({
   name: "chatslice",
