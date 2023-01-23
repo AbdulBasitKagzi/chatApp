@@ -62,7 +62,7 @@ function Login() {
   };
  
 
-  React.useEffect(() => { 
+  React.useEffect(() => {
     token && navigate("/");
   }, [token]);
 

@@ -1,21 +1,37 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { Routes, Route, redirect } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Signup from "../Pages/Signup";
 import Home from "../Pages/Home";
 import Login from "../Pages/Login";
 import Abdul from "../Pages/Abdul";
+import { PrivateRoute } from "../Components/PrivateRoute";
+import UserSettings from "../Pages/UserSettings";
 function RouteS() {
-  const { isAuthenticated } = useSelector((state) => state.user)
+
+  // const token = localStorage.getItem('token')
+
   return (
-    <div>
+    <>
       <Routes>
+        <Route exact path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          } />
+        <Route exact path="/settings"
+          element={
+            <PrivateRoute>
+              <UserSettings/>
+            </PrivateRoute>
+          } />
         <Route exact path="/signup" element={<Signup />} />
-        <Route exact path="/" element={<Home />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/abdul" element={<Abdul />} />
       </Routes>
-    </div>
+    </>
+
   );
 }
 

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 
 const userState = {
@@ -8,8 +9,10 @@ const userState = {
   error: "",
   token: "",
   allUsers: [],
-  isAutheticated: false
+  isAuthenticated: false
 };
+
+
 
 const apiCall = axios.create({
   baseURL: "http://localhost:4000/",
@@ -67,6 +70,22 @@ export const getCurrentUser = createAsyncThunk(
       const response = await apiCall.get("/getcurrentuser");
       return response;
     } catch (error) {
+      console.log('error', error)
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const updateusersettings = createAsyncThunk(
+  "userslice/updateusersettings",
+  async (body, thunkAPI) => {
+    console.log('----->', body)
+    try {
+      const response = await apiCall.patch("/updateusersettings", { usersettings: body });
+      thunkAPI.dispatch(getCurrentUser())
+      return response;
+    } catch (error) {
+      console.log('error', error)
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -75,6 +94,11 @@ export const getCurrentUser = createAsyncThunk(
 const userSlice = createSlice({
   name: "userslice",
   initialState: userState,
+  reducers: {
+    setAuthentication: (state, action) => {
+      state.isAuthenticated = false
+    }
+  },
   extraReducers: {
     [registerUser.fulfilled]: (state, action) => {
       state.token = action.payload.data.token;
@@ -93,7 +117,8 @@ const userSlice = createSlice({
     [LoginUser.fulfilled]: (state, action) => {
       state.token = action.payload.data.token;
       state.isLoading = false;
-      state.isAutheticated = true
+      state.isAuthenticated = true
+      console.log('isAuth', state.isAuthenticated)
       state.userData = action.payload.data.User
     },
     [LoginUser.pending]: (state, action) => {
@@ -106,7 +131,7 @@ const userSlice = createSlice({
     [getUsers.fulfilled]: (state, action) => {
       state.isLoading = false;
       state.allUsers = action.payload.data;
-      state.isAutheticated = true
+      state.isAuthenticated = true
     },
 
     [getUsers.pending]: (state, action) => {
@@ -117,16 +142,30 @@ const userSlice = createSlice({
     },
 
     [getCurrentUser.fulfilled]: (state, action) => {
-
-      state.userData = action.payload.data[0]
+    
+      state.userData = action.payload.data
       state.isLoading = false;
-      state.isAutheticated = true
+      state.isAuthenticated = true
 
     },
     [getCurrentUser.pending]: (state, action) => {
       state.isLoading = true;
     },
     [getCurrentUser.rejected]: (state, action) => {
+      state.isLoading = false;
+    },
+
+    [updateusersettings.fulfilled]: (state, action) => {
+
+
+      state.isLoading = false;
+      state.isAuthenticated = true
+
+    },
+    [updateusersettings.pending]: (state, action) => {
+      state.isLoading = true;
+    },
+    [updateusersettings.rejected]: (state, action) => {
       state.isLoading = false;
     },
   },

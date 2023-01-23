@@ -26,6 +26,7 @@ function Home() {
   const { allUsers, userData } = useSelector((state) => state.user);
   const { conversation } = useSelector((state) => state.conversation);
   const [activeUser, setActiveUser] = React.useState([])
+  const [openMenu, setOpenMenu] = React.useState(true)
 
 
 
@@ -71,9 +72,9 @@ function Home() {
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
-        <Box>
-          <Appbar />
+      <Box sx={{ display: "flex" }} className="bg-orange-100">
+        <Box sx={{ pr: 2 }}>
+          <Appbar openMenu={openMenu} title="Open settings" />
           {/* below code needs to be changed */}
           <div>This is {userData?.name}</div>
 
@@ -119,8 +120,8 @@ function Home() {
             />
           </Box>
         ) : (
-          <Box>
-            <Typography variant="h1">Message someone </Typography>
+          <Box className=" m-[150px] bg-red-100">
+            <Typography className="p-8" variant="h3">Message someone </Typography>
           </Box>
         )}
       </Box>

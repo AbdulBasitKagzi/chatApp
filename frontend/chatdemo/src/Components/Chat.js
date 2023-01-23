@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { io } from "socket.io-client";
 import { postChat, uploadFile } from "../Store/Slice/chatSlice";
-
+import Appbar from "./Appbar"
 
 import { Typography, Box, TextField } from "@mui/material";
 import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp';
@@ -21,6 +21,7 @@ function Chat(props) {
   const [state, setState] = React.useState()
   const [messages, setMessages] = React.useState()
   const [file, setFile] = React.useState()
+  const [online, setOnline] = React.useState()
 
   const dispatch = useDispatch();
   const { chat, image, isLoading } = useSelector((state) => state.chat);
@@ -47,7 +48,7 @@ function Chat(props) {
       sender: props.sender,
       conversationId: props.convoid,
       reciever: props.reciever
-    }));  
+    }));
   }, [props.convoid]);
 
   React.useEffect(() => {
@@ -82,7 +83,7 @@ function Chat(props) {
         ...prev,
         chat: a,
       }));
-       socket.current.emit('sendMessage', message)
+      socket.current.emit('sendMessage', message)
 
       dispatch(postChat(
         {
@@ -94,9 +95,9 @@ function Chat(props) {
       return;
     }
 
-      // to post only text message
-      console.log('in else to emit')
-      socket.current.emit('sendMessage', message)    
+    // to post only text message
+    console.log('in else to emit')
+    socket.current.emit('sendMessage', message)
 
     dispatch(postChat(message));
     setMessage((prev) => ({
@@ -117,8 +118,6 @@ function Chat(props) {
 
   const getImage = async (file) => {
     if (file) {
-
-      console.log('file', file, file.name)
       const data = new FormData()
       data.append("name", file.name)
       data.append("file", file)
@@ -154,11 +153,14 @@ function Chat(props) {
     }
   }
 
+  useEffect(() => {
+    setOnline(`${props.activeUser?.find(active => active.userId === props.reciever) ? "Online" : "Offline"}`)
+  }, [activeUser])
+
   return (
     <div>
-      Hello from {props.username}
-      {props.reciever}
-      {props.activeUser?.find(active => active.userId === props.reciever) ? "Online" : "Offline"}
+      <Appbar user={props.username} status={online} title="User Profile" width={1072} />
+
       <Box>
         {!messages?.message ? (
           messages?.map((chat) => {
@@ -233,10 +235,7 @@ function Chat(props) {
             (e) => {
               if (e.keyCode === 13) {
                 // socket.current.emit('sendMessage', message)
-
                 handleSubmit(e);
-
-
               }
             }}
         />
