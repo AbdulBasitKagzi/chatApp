@@ -1,4 +1,5 @@
 const conversation = require("../models/coversationModel");
+const user = require("../models/userModel");
 
 async function startConversation(req, res) {
   try {
@@ -41,4 +42,17 @@ async function getConverstaions(req, res) {
   }
 }
 
-module.exports = { startConversation, getConverstaions };
+async function searchUsers(req, res) {
+  try {
+    console.log('body--->', req.params)
+    const id = req.params.id
+    console.log('id--->', id)
+    const findUsers = await user.find({ name: { '$regex': id } })
+    return res.status(200).json(findUsers)
+  } catch (error) {
+    console.log('error--->', error)
+    return res.status(400).json({ message: "Look at console for error" });
+  }
+}
+
+module.exports = { startConversation, getConverstaions, searchUsers };
