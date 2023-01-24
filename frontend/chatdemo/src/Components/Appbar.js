@@ -48,12 +48,14 @@ function Appbar({ user, status, openMenu, title, width }) {
   }, [])
   return (
     <Box>
-      <AppBar position="static" sx={{ boxShadow: 0, width:width }}>
+      <AppBar position="static" sx={{ boxShadow: 0, width: width }}>
         <StyledToolbar>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box>
               <Tooltip title={title}>
-                <IconButton onClick={(e) => handleOpenUserMenu(e, openMenu)} sx={{ p: 0 }}>
+                <IconButton
+                  onClick={(e) => handleOpenUserMenu(e, openMenu)}
+                  sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
                   <p className="text-xl pl-2">{user}</p>
                   <p className="text-xs">{status}</p>
@@ -103,7 +105,7 @@ function Appbar({ user, status, openMenu, title, width }) {
                 </Button>
               </Menu>
             </Box>
-            <Box>
+            {openMenu && <Box>
               <IconButton
                 size="large"
                 aria-label="display more actions"
@@ -114,7 +116,7 @@ function Appbar({ user, status, openMenu, title, width }) {
                 <MoreIcon />
               </IconButton>
             </Box>
-          </Box>
+            }       </Box>
         </StyledToolbar>
       </AppBar>
     </Box>

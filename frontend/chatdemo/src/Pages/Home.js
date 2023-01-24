@@ -8,12 +8,14 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import { getUsers, getCurrentUser } from "../Store/Slice/authSlice";
 import { getConversation } from "../Store/Slice/conversationSlice";
 import { getChat } from "../Store/Slice/chatSlice";
+import SearchBar from "../Components/SearchBar";
 
 function Home() {
+
   const socket = React.useRef()
   const [myuser, setmyUser] = React.useState([]);
   const [userName, setUserName] = React.useState({
@@ -74,14 +76,15 @@ function Home() {
     <>
       <Box sx={{ display: "flex" }} className="bg-orange-100">
         <Box sx={{ pr: 2 }}>
-          <Appbar openMenu={openMenu} title="Open settings" />
-          {/* below code needs to be changed */}
-          <div>This is {userData?.name}</div>
+          <Appbar user={userData?.name} openMenu={openMenu} title="Open settings" />
+          <Box className="m-2">
+            <SearchBar />
+          </Box>
 
           {myuser?.map((user) => {
             return (
               <>
-                <ListItem alignItems="flex-start">
+                <ListItem alignItems="flex-start" className="border-r-4 border-blue-400 mt-2">
                   <ListItemAvatar>
                     <Avatar
                       alt="Remy Sharp"

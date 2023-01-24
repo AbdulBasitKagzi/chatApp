@@ -76,9 +76,9 @@ function Chat(props) {
   // to handle submit 
   const handleSubmit = async (e) => {
     let a = await getImage(file)
+
     // to post images/pdf
     if (a) {
-      console.log('im in inf')
       setMessage((prev) => ({
         ...prev,
         chat: a,
@@ -92,17 +92,20 @@ function Chat(props) {
         }
       ));
       setFile("")
+      setMessage((prev) => ({
+        ...prev,
+        chat: "",
+      }));
       return;
     }
 
     // to post only text message
-    console.log('in else to emit')
     socket.current.emit('sendMessage', message)
 
     dispatch(postChat(message));
     setMessage((prev) => ({
       ...prev,
-      [e.target.name]: "",
+      chat: "",
     }));
   };
 
@@ -155,11 +158,11 @@ function Chat(props) {
 
   useEffect(() => {
     setOnline(`${props.activeUser?.find(active => active.userId === props.reciever) ? "Online" : "Offline"}`)
-  }, [activeUser])
+  }, [props.activeUser, props.reciever])
 
   return (
     <div>
-      <Appbar user={props.username} status={online} title="User Profile" width={1072} />
+      <Appbar user={props.username} status={online} title="User Profile" width={1037} />
 
       <Box>
         {!messages?.message ? (
@@ -169,16 +172,18 @@ function Chat(props) {
               return (
                 <>
                   {chat.chat.includes('jpg') || chat.chat.includes('png') || chat.chat.includes('jpeg')
-                    ? <Box >
-                      <img src={`${chat.chat}`} alt="image" style={{ width: "100px" }} />
+                    ? <Box className="flex justify-end m-5" >
+                      <img src={`${chat.chat}`} alt="chat" style={{ width: "100px" }} loading="lazy" />
                     </Box>
                     : chat.chat.includes('pdf')
-                      ? <Box>
+                      ? <Box className="flex justify-end">
                         <PictureAsPdfSharpIcon />
                       </Box>
-                      : <Typography class="text-blue-600 ml-5">
-                        {chat.chat}
-                      </Typography>
+                      : <Box className="border-r-4  border-indigo-600 inline-block flex justify-end mb-5 mr-2 mt-2">
+                        <Typography class="text-indigo-600 ml-5 mr-2 border-b-4  border-indigo-400">
+                          {chat.chat}
+                        </Typography>
+                      </Box>
                   }
                 </>
               );
@@ -186,8 +191,9 @@ function Chat(props) {
               return (
                 <>
                   {chat.chat.includes('jpg') || chat.chat.includes('png') || chat.chat.includes('jpeg')
-                    ? <Box sx={{ display: 'flex' }}>
-                      <img src={`${chat.chat}`} alt="image" style={{ width: "100px" }} />
+                    ? <Box sx={{ display: 'flex', justifyContent: "flex-start" }}>
+                      <img src={`${chat.chat}`} alt="image" style={{ width: "100px" }} loading="lazy" />
+
                       <Box
                         onClick={(e) => {
                           downloadMedia(e, chat.chat)
@@ -196,7 +202,7 @@ function Chat(props) {
                       </Box>
                     </Box>
                     : chat.chat.includes('pdf')
-                      ? <Box sx={{ display: 'flex' }}>
+                      ? <Box sx={{ display: 'flex', justifyContent: "flex-start" }}>
                         <PictureAsPdfSharpIcon />
                         <Box
                           onClick={(e) => {
@@ -205,9 +211,11 @@ function Chat(props) {
                           <BrowserUpdatedIcon />
                         </Box>
                       </Box>
-                      : <Typography class="text-green-600 ml-5">
-                        {chat.chat}
-                      </Typography>
+                      : <Box className="border-l-4  border-green-600  inline-block flex justify-start m-2">
+                        <Typography class="text-green-600 ml-2 border-b-4 border-green-400">
+                          {chat.chat}
+                        </Typography>
+                      </Box>
                   }
                 </>
               );
@@ -219,7 +227,7 @@ function Chat(props) {
           </>
         )}
       </Box>
-      <Box>
+      <Box className="flex justify-center">
         <TextField
           class=" border-4 rounded-lg w-96"
           placeholder="type a message"
@@ -237,11 +245,19 @@ function Chat(props) {
                 // socket.current.emit('sendMessage', message)
                 handleSubmit(e);
               }
+
             }}
         />
+        <button className="rounded transition ease-in-out delay-150
+        p-2 m-2 bg-blue-500 hover:-translate-y-1 hover:scale-110
+          hover:bg-indigo-500 duration-300 ..."
+          onClick={(e) => handleSubmit(e)}
+        >
+          Send
+        </button>
       </Box>
       <input type="file" onChange={(e) => onFileChange(e)} />
-    </div>
+    </div >
   );
 }
 
